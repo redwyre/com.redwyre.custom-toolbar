@@ -37,7 +37,41 @@ namespace Redwyre.CustomToolbar.Editor
 
             rootElement.Add(new PropertyField(settings.FindProperty(nameof(ToolbarSettings.items))));
 
+            rootElement.Add(new ListView(ToolbarItems.Items, makeItem: MakeItem, bindItem: BindItem));
+
             rootElement.Bind(settings);
+        }
+
+        private void AddItem(ToolbarItemConfig config)
+        {
+            ScriptableSingleton<ToolbarSettings>.instance.items.Add(new ToolbarItem(config.TypeName));
+        }
+
+        private void BindItem(VisualElement element, int index)
+        {
+            var i = ToolbarItems.Items[index];
+            element.Q<Label>("Label").text = i.TypeName;
+            element.Q<Button>("Button").clicked += () => { AddItem(i); };
+        }
+
+        private VisualElement MakeItem()
+        {
+            var root = new VisualElement();
+            root.style.flexDirection = FlexDirection.Row;
+            root.style.height = 32;
+            var label = new Label()
+            {
+                name = "Label"
+            };
+            var button = new Button()
+            {
+                name = "Button",
+                text = "Add",
+            };
+            button.style.width = 32;
+            root.Add(label);
+            root.Add(button);
+            return root;
         }
 
         public override void OnDeactivate()

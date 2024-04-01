@@ -9,6 +9,7 @@ namespace Redwyre.CustomToolbar.Editor
     [Serializable]
     public class ToolbarItem
     {
+        public bool Enabled;
         public string TypeName;
         public ToolbarSide Side;
         public string? Settings;

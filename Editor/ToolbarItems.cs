@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -14,22 +15,30 @@ namespace Redwyre.CustomToolbar.Editor
 {
     public class ToolbarItemConfig
     {
+        public string TypeName;
         public Action? Action;
         public string? Tooltip;
         public string? Icon;
         public string? Label;
+
+        public ToolbarItemConfig(string typeName)
+        {
+            TypeName = typeName;
+        }
     }
 
     [InitializeOnLoad]
     public static class ToolbarItems
     {
-        static ToolbarItemConfig[] items;
+        static ToolbarItemConfig[] itemConfigs;
+        static ToolbarItem[] savedItems = Array.Empty<ToolbarItem>();
+        static List<VisualElement> activeElements = new List<VisualElement>();
 
-        public static IReadOnlyList<ToolbarItemConfig> Items => items;
+        public static ToolbarItemConfig[] Items => itemConfigs;
 
         static ToolbarItems()
         {
-            items = GetItems();
+            itemConfigs = GetItems();
 
             RebuildToolbar();
         }
@@ -48,7 +57,7 @@ namespace Redwyre.CustomToolbar.Editor
             {
                 try
                 {
-                    var c = new ToolbarItemConfig();
+                    var c = new ToolbarItemConfig(method.Name);
                     c.Tooltip = attr.ToolTip;
                     c.Action = (Action)Delegate.CreateDelegate(typeof(Action), method);
                     c.Icon = attr.Icon;
@@ -67,13 +76,27 @@ namespace Redwyre.CustomToolbar.Editor
 
         public static void RebuildToolbar()
         {
-            foreach (var item in items)
+            foreach (var e in activeElements)
             {
-                var b = CreateButton(item);
-                var side = ToolbarSide.LeftAlignCenter;
-                var ve = GetParent(side);
+                e.RemoveFromHierarchy();
+            }
+            activeElements.Clear();
 
-                ve.Add(b);
+            var configLookup = itemConfigs.ToDictionary(ic => ic.TypeName);
+
+            var toolbarItems = ToolbarSettings.instance.items;
+
+            foreach (var item in toolbarItems)
+            {
+                if (configLookup.TryGetValue(item.TypeName, out var config))
+                {
+                    var b = CreateToolbarButton(config);
+                    var side = item.Side;
+                    var ve = GetParent(side);
+
+                    ve.Add(b);
+                    activeElements.Add(b);
+                }
             }
         }
 
@@ -91,7 +114,7 @@ namespace Redwyre.CustomToolbar.Editor
             };
         }
 
-        public static VisualElement CreateButton(ToolbarItemConfig config)
+        public static VisualElement CreateToolbarButton(ToolbarItemConfig config)
         {
             var button = new ToolbarButton(config.Action);
             button.tooltip = config.Tooltip;
