@@ -1,8 +1,14 @@
-﻿namespace Redwyre.CustomToolbar.Editor
+﻿#nullable enable
+
+namespace Redwyre.CustomToolbar.Editor
 {
     public enum ToolbarSide
     {
-        Left,
-        Right,
+        LeftAlignLeft,
+        LeftAlignCenter,
+        LeftAlignRight,
+        RightAlignLeft,
+        RightAlignCenter,
+        RightAlignRight,
     }
 }

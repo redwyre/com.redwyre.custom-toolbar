@@ -1,17 +1,18 @@
 ﻿// Copyright (c) BovineLabs. All rights reserved.
 // With modifications
+using System;
+using System.Reflection;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+#nullable enable
 
 namespace Redwyre.CustomToolbar.Editor
 {
-    using System;
-    using System.Reflection;
-    using UnityEditor;
-    using UnityEngine;
-    using UnityEngine.UIElements;
-
     public static class EditorToolbar
     {
-        private static readonly Type ToolbarType = typeof(Editor).Assembly.GetType("UnityEditor.Toolbar");
+        private static readonly Type ToolbarType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.Toolbar");
         private static ScriptableObject currentToolbar;
         private static bool isInitialized;
 
@@ -22,16 +23,16 @@ namespace Redwyre.CustomToolbar.Editor
 
             currentToolbar = ScriptableObject.CreateInstance<ScriptableObject>();
 
-            LeftParent = CreateParentElement();
-            RightParent = CreateParentElement();
+            LeftParent = CreateParentElement("ToolbarCustomParentLeft");
+            RightParent = CreateParentElement("ToolbarCustomParentRight");
 
-            LeftParent.Add(LeftLeftParent = CreateSectionElement());
-            LeftParent.Add(LeftCenterParent = CreateSectionElement(Justify.Center));
-            LeftParent.Add(LeftRightParent = CreateSectionElement(Justify.FlexEnd));
+            LeftParent.Add(LeftLeftParent = CreateSectionElement(  "ToolbarCustomLeftAlignLeft"));
+            LeftParent.Add(LeftCenterParent = CreateSectionElement("ToolbarCustomLeftAlignCenter", Justify.Center));
+            LeftParent.Add(LeftRightParent = CreateSectionElement( "ToolbarCustomLeftAlignRight", Justify.FlexEnd));
 
-            RightParent.Add(RightLeftParent = CreateSectionElement());
-            RightParent.Add(RightCenterParent = CreateSectionElement(Justify.Center));
-            RightParent.Add(RightRightParent = CreateSectionElement(Justify.FlexEnd));
+            RightParent.Add(RightLeftParent = CreateSectionElement("ToolbarCustomRightAlightLeft"));
+            RightParent.Add(RightCenterParent = CreateSectionElement("ToolbarCustomRightAlightCenter", Justify.Center));
+            RightParent.Add(RightRightParent = CreateSectionElement( "ToolbarCustomRightAlightRight", Justify.FlexEnd));
         }
 
         public static VisualElement LeftParent { get; }
@@ -76,10 +77,11 @@ namespace Redwyre.CustomToolbar.Editor
             isInitialized = true;
         }
 
-        private static VisualElement CreateParentElement()
+        private static VisualElement CreateParentElement(string name)
         {
             return new VisualElement
             {
+                name = name,
                 style =
                 {
                     flexGrow = 1,
@@ -88,10 +90,11 @@ namespace Redwyre.CustomToolbar.Editor
             };
         }
 
-        private static VisualElement CreateSectionElement(Justify justify = Justify.FlexStart)
+        private static VisualElement CreateSectionElement(string name, Justify justify = Justify.FlexStart)
         {
             return new VisualElement
             {
+                name = name,
                 style =
                 {
                     flexGrow = 1,

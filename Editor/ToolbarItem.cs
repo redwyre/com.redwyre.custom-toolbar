@@ -2,6 +2,8 @@
 using UnityEditor;
 using System;
 
+#nullable enable
+
 namespace Redwyre.CustomToolbar.Editor
 {
     [Serializable]
@@ -9,6 +11,11 @@ namespace Redwyre.CustomToolbar.Editor
     {
         public string TypeName;
         public ToolbarSide Side;
-        public string Settings;
+        public string? Settings;
+
+        public ToolbarItem(string typeName)
+        {
+            TypeName = typeName;
+        }
     }
 }

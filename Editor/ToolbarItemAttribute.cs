@@ -1,14 +1,16 @@
 using System;
 
+#nullable enable
+
 namespace Redwyre.CustomToolbar.Editor
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     sealed class ToolbarItemAttribute : Attribute
     {
-        // See the attribute guidelines at 
-        //  http://go.microsoft.com/fwlink/?LinkId=85236
+        public string? ToolTip { get; set; }
 
+        public string? Icon { get; set; }
 
-        public string ToolTip { get; set; }
+        public string? Label { get; set; }
     }
 }

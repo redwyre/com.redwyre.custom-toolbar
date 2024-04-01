@@ -3,6 +3,8 @@ using UnityEditor;
 using System.Collections.Generic;
 using System;
 
+#nullable enable
+
 namespace Redwyre.CustomToolbar.Editor
 {
     [FilePath("Redwyre/CustomToolbarSettings.asset", FilePathAttribute.Location.PreferencesFolder)]
