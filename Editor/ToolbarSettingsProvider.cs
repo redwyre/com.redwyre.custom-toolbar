@@ -35,6 +35,7 @@ namespace Redwyre.CustomToolbar.Editor
             title.AddToClassList("title");
             rootElement.Add(title);
 
+            rootElement.Add(new PropertyField(settings.FindProperty(nameof(ToolbarSettings.Enabled))));
             rootElement.Add(new PropertyField(settings.FindProperty(nameof(ToolbarSettings.items))));
 
             rootElement.Add(new ListView(ToolbarItems.Items, makeItem: MakeItem, bindItem: BindItem));

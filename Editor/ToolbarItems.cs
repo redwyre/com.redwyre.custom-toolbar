@@ -82,6 +82,11 @@ namespace Redwyre.CustomToolbar.Editor
             }
             activeElements.Clear();
 
+            if (!ToolbarSettings.instance.Enabled)
+            {
+                return;
+            }
+
             var configLookup = itemConfigs.ToDictionary(ic => ic.TypeName);
 
             var toolbarItems = ToolbarSettings.instance.items;
@@ -90,6 +95,11 @@ namespace Redwyre.CustomToolbar.Editor
             {
                 if (configLookup.TryGetValue(item.TypeName, out var config))
                 {
+                    if (!item.Enabled)
+                    {
+                        continue;
+                    }
+
                     var b = CreateToolbarButton(config);
                     var side = item.Side;
                     var ve = GetParent(side);

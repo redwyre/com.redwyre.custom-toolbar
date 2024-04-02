@@ -10,6 +10,7 @@ namespace Redwyre.CustomToolbar.Editor
     [FilePath("Redwyre/CustomToolbarSettings.asset", FilePathAttribute.Location.PreferencesFolder)]
     public class ToolbarSettings : ScriptableSingleton<ToolbarSettings>
     {
+        public bool Enabled = true;
         public List<ToolbarItem> items = new();
 
         public static SerializedObject GetSerializedSettings()
