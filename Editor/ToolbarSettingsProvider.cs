@@ -17,9 +17,14 @@ namespace Redwyre.CustomToolbar.Editor
 
         SerializedObject? settings;
 
+        VisualTreeAsset list;
+        VisualTreeAsset settingsPage;
+
         public ToolbarSettingsProvider(string path, SettingsScope scopes, IEnumerable<string>? keywords = null)
             : base(path, scopes, keywords)
         {
+            list = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarItemSetting.uxml");
+            settingsPage = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarSettings.uxml");
         }
 
         public static bool IsSettingsAvailable()
@@ -31,21 +36,63 @@ namespace Redwyre.CustomToolbar.Editor
         {
             settings = ToolbarSettings.GetSerializedSettings();
 
-            var title = new Label() { text = label };
-            title.AddToClassList("title");
-            rootElement.Add(title);
+            //var title = new Label() { text = label };
+            //title.AddToClassList("title");
 
-            rootElement.Add(new PropertyField(settings.FindProperty(nameof(ToolbarSettings.Enabled))));
-            rootElement.Add(new PropertyField(settings.FindProperty(nameof(ToolbarSettings.items))));
+            settingsPage.CloneTree(rootElement);
+            //rootElement.Add(title);
 
-            rootElement.Add(new ListView(ToolbarItems.Items, makeItem: MakeItem, bindItem: BindItem));
+            //rootElement.Add(new PropertyField(settings.FindProperty(nameof(ToolbarSettings.Enabled))));
+            //rootElement.Add(new PropertyField(settings.FindProperty(nameof(ToolbarSettings.items))));
 
+            //rootElement.Add(new ListView(ToolbarSettings.instance.items, makeItem: SettingsMakeItem) { bindingPath = "items" });
+            //rootElement.Add(new ListView(ToolbarItems.Items, makeItem: MakeItem, bindItem: BindItem));
+
+            rootElement.Q<Label>("Title").text = label;
+            rootElement.Q<ListView>("Items").makeItem = SettingsMakeItem;
+            rootElement.Q<ListView>("Adds").makeItem = MakeItem;
+            rootElement.Q<ListView>("Adds").bindItem = BindItem;
+            rootElement.Q<ListView>("Adds").itemsSource = ToolbarItems.Items;
+
+            var dummy = new VisualElement();
+            dummy.TrackSerializedObjectValue(settings, SettingsChanged);
+            rootElement.Add(dummy);
             rootElement.Bind(settings);
+
+        }
+
+        private void SettingsChanged(SerializedObject settingsObject)
+        {
+            settingsObject.ApplyModifiedPropertiesWithoutUndo();
+            ScriptableSingleton<ToolbarSettings>.instance.Save();
+            ToolbarItems.RebuildToolbar();
+        }
+
+        private void SettingsBindItem(VisualElement element, int index)
+        {
+            if (element is TemplateContainer templateContainer)
+            {
+                templateContainer.bindingPath = $"items.Array.data[{index}]";
+            }
+        }
+
+        private VisualElement SettingsMakeItem()
+        {
+            var fullElement = list.Instantiate();
+            var trimmed = fullElement[0];
+            return trimmed;
         }
 
         private void AddItem(ToolbarItemConfig config)
         {
-            ScriptableSingleton<ToolbarSettings>.instance.items.Add(new ToolbarItem(config.TypeName));
+            ScriptableSingleton<ToolbarSettings>.instance.items.Add(new ToolbarItem(config.TypeName) { Icon = GetTextureFromIcon(config) });
+        }
+
+        private static Texture2D? GetTextureFromIcon(ToolbarItemConfig config)
+        {
+            var content = EditorGUIUtility.IconContent(config.Icon);
+
+            return (content != null) ? (content.image as Texture2D) : null;
         }
 
         private void BindItem(VisualElement element, int index)
@@ -79,11 +126,8 @@ namespace Redwyre.CustomToolbar.Editor
         {
             if (settings != null)
             {
-                settings.ApplyModifiedPropertiesWithoutUndo();
-                ScriptableSingleton<ToolbarSettings>.instance.Save();
+                SettingsChanged(settings);
                 settings = null;
-
-                ToolbarItems.RebuildToolbar();
             }
         }
 

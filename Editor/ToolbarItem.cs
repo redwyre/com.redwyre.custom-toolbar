@@ -12,6 +12,7 @@ namespace Redwyre.CustomToolbar.Editor
         public bool Enabled;
         public string TypeName;
         public ToolbarSide Side;
+        public Texture2D? Icon;
         public string? Settings;
 
         public ToolbarItem(string typeName)

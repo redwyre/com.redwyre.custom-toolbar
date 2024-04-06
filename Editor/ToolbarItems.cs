@@ -100,7 +100,7 @@ namespace Redwyre.CustomToolbar.Editor
                         continue;
                     }
 
-                    var b = CreateToolbarButton(config);
+                    var b = CreateToolbarButton(item, config);
                     var side = item.Side;
                     var ve = GetParent(side);
 
@@ -124,7 +124,7 @@ namespace Redwyre.CustomToolbar.Editor
             };
         }
 
-        public static VisualElement CreateToolbarButton(ToolbarItemConfig config)
+        public static VisualElement CreateToolbarButton(ToolbarItem item, ToolbarItemConfig config)
         {
             var button = new ToolbarButton(config.Action);
             button.tooltip = config.Tooltip;
@@ -135,11 +135,11 @@ namespace Redwyre.CustomToolbar.Editor
                 button.text = config.Label;
             }
 
-            if (config.Icon != null)
+            if (item.Icon != null)
             {
                 var icon = new Image();
                 icon.AddToClassList("unity-editor-toolbar-element__icon");
-                icon.style.backgroundImage = Background.FromTexture2D((Texture2D)EditorGUIUtility.IconContent(config.Icon).image);
+                icon.style.backgroundImage = Background.FromTexture2D(item.Icon);
                 icon.style.height = 16;
                 icon.style.width = 16;
                 icon.style.alignSelf = Align.Center;

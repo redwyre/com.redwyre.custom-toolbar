@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:BindableElement style="flex-grow: 1; flex-direction: row; height: 107px; border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; min-height: 60px;">
+        <ui:Toggle binding-path="Enabled" name="Enabled" style="align-items: center; flex-direction: row;" />
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:Label tabindex="-1" parse-escape-sequences="false" display-tooltip-when-elided="true" binding-path="TypeName" enable-rich-text="false" name="Title" />
+            <uie:PropertyField binding-path="Side" name="Side" style="min-height: 16px;" />
+            <uie:PropertyField name="Icon" binding-path="Icon" />
+            <uie:PropertyField binding-path="Settings" name="Settings" style="min-height: 16px;" />
+        </ui:VisualElement>
+    </ui:BindableElement>
+</ui:UXML>
