@@ -70,12 +70,36 @@ namespace Redwyre.CustomToolbar.Editor
                     rootElement.userData = -1;
 
                     var removeButton = rootElement.Q<Button>("Remove");
+                    var moveLeftButton = rootElement.Q<Button>("MoveLeft");
+                    var moveRightButton = rootElement.Q<Button>("MoveRight");
                     removeButton.clicked += () =>
                     {
                         var index = (int)rootElement.userData;
-                        var listProp = settings.FindProperty(itemList.bindingPath);
-                        listProp.DeleteArrayElementAtIndex(index);
-                        listProp.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+                        ToolbarSettings.instance.Groups[(int)side].Items.RemoveAt(index);
+                    };
+                    moveLeftButton.clicked += () =>
+                    {
+                        if (side == ToolbarSide.LeftAlignLeft) return;
+
+                        var savedSide = (int)side;
+                        var index = (int)rootElement.userData;
+
+                        var item = ToolbarSettings.instance.Groups[savedSide].Items[index];
+
+                        ToolbarSettings.instance.Groups[savedSide].Items.RemoveAt(index);
+                        ToolbarSettings.instance.Groups[--savedSide].Items.Add(item);
+                    };
+                    moveRightButton.clicked += () =>
+                    {
+                        if (side == ToolbarSide.RightAlignRight) return;
+
+                        var savedSide = (int)side;
+                        var index = (int)rootElement.userData;
+
+                        var item = ToolbarSettings.instance.Groups[savedSide].Items[index];
+
+                        ToolbarSettings.instance.Groups[savedSide].Items.RemoveAt(index);
+                        ToolbarSettings.instance.Groups[++savedSide].Items.Add(item);
                     };
                     return rootElement;
                 };
@@ -87,6 +111,9 @@ namespace Redwyre.CustomToolbar.Editor
                     bindableElement.bindingPath = $"{itemList.bindingPath}.Array.data[{index}]";
                     var prop = settings.FindProperty(bindableElement.bindingPath);
                     bindableElement.BindProperty(prop);
+
+                    element.Q("MoveLeft").SetEnabled(side != ToolbarSide.LeftAlignLeft);
+                    element.Q("MoveRight").SetEnabled(side != ToolbarSide.RightAlignRight);
                 };
                 itemList.unbindItem = (element, index) =>
                 {
@@ -106,9 +133,6 @@ namespace Redwyre.CustomToolbar.Editor
             dummy.TrackSerializedObjectValue(settings, SettingsChanged);
             rootElement.Add(dummy);
             rootElement.Bind(settings);
-
-            //Groups.Array.data[0].Items.Array.data[0]
-            //Groups.Array.data[0].Items.Array.data[0]
         }
 
         private void SettingsChanged(SerializedObject settingsObject)
