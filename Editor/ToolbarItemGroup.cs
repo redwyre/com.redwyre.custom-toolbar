@@ -3,18 +3,21 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class ToolbarItemGroup
+namespace Redwyre.CustomToolbar.Editor
 {
-    [SerializeField]
-    ToolbarSide toolbarSide;
-
-    public ToolbarSide ToolbarSide => toolbarSide;
-
-    public List<ToolbarItem> Items = new();
-
-    public ToolbarItemGroup(ToolbarSide toolbarSide)
+    [Serializable]
+    public class ToolbarItemGroup
     {
-        this.toolbarSide = toolbarSide;
+        [SerializeField]
+        ToolbarSide toolbarSide;
+
+        public ToolbarSide ToolbarSide => toolbarSide;
+
+        public List<ToolbarItem> Items = new();
+
+        public ToolbarItemGroup(ToolbarSide toolbarSide)
+        {
+            this.toolbarSide = toolbarSide;
+        }
     }
 }

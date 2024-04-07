@@ -5,18 +5,21 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-public static class SerializedObjectUtils
+namespace Redwyre.CustomToolbar.Editor
 {
-    public static string FormatSerializedObjectNames(SerializedObject serializedObject)
+    public static class SerializedObjectUtils
     {
-        var sb = new StringBuilder();
-
-        var prop = serializedObject.GetIterator();
-        do
+        public static string FormatSerializedObjectNames(SerializedObject serializedObject)
         {
-            sb.AppendLine($"{prop.propertyPath}: {prop.type}");
-        } while (prop.NextVisible(true));
+            var sb = new StringBuilder();
 
-        return sb.ToString();
+            var prop = serializedObject.GetIterator();
+            do
+            {
+                sb.AppendLine($"{prop.propertyPath}: {prop.type}");
+            } while (prop.NextVisible(true));
+
+            return sb.ToString();
+        }
     }
 }
