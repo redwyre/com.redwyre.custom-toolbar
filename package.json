@@ -1,12 +1,9 @@
 {
   "name": "com.redwyre.custom-toolbar",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "displayName": "Custom Toolbar",
-  "description": "custom toolbar",
+  "description": "A customisable and extendable toolbar for Unity",
   "unity": "2022.3",
-  "documentationUrl": "https://example.com/",
-  "changelogUrl": "https://example.com/changelog.html",
-  "licensesUrl": "https://example.com/licensing.html",
   "keywords": [
     "custom",
     "toolbar"
@@ -14,6 +11,6 @@
   "author": {
     "name": "Simon Stevenson",
     "email": "redwyre@redwyre.com",
-    "url": "https://www.redwyre.com"
+    "url": "https://redwyre.com"
   }
 }
