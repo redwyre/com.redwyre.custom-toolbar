@@ -67,23 +67,31 @@ namespace Redwyre.CustomToolbar.Editor
                 {
                     var templateContainer = list.Instantiate();
                     var rootElement = templateContainer[0];
-                    rootElement.userData = -1;
+                    return rootElement;
+                };
+                itemList.bindItem = (element, index) =>
+                {
+                    var bindableElement = (BindableElement)element;
 
-                    var removeButton = rootElement.Q<Button>("Remove");
-                    var moveLeftButton = rootElement.Q<Button>("MoveLeft");
-                    var moveRightButton = rootElement.Q<Button>("MoveRight");
+                    bindableElement.bindingPath = $"{itemList.bindingPath}.Array.data[{index}]";
+                    var prop = settings.FindProperty(bindableElement.bindingPath);
+                    bindableElement.BindProperty(prop);
+
+                    var removeButton = element.Q<Button>("Remove");
+                    var moveLeftButton = element.Q<Button>("MoveLeft");
+                    var moveRightButton = element.Q<Button>("MoveRight");
+
+                    moveLeftButton.SetEnabled(side != ToolbarSide.LeftAlignLeft);
+                    moveRightButton.SetEnabled(side != ToolbarSide.RightAlignRight);
+
                     removeButton.clicked += () =>
                     {
-                        var index = (int)rootElement.userData;
-                        ToolbarSettings.instance.Groups[(int)side].Items.RemoveAt(index);
+                        var savedSide = (int)side;
+                        ToolbarSettings.instance.Groups[savedSide].Items.RemoveAt(index);
                     };
                     moveLeftButton.clicked += () =>
                     {
-                        if (side == ToolbarSide.LeftAlignLeft) return;
-
                         var savedSide = (int)side;
-                        var index = (int)rootElement.userData;
-
                         var item = ToolbarSettings.instance.Groups[savedSide].Items[index];
 
                         ToolbarSettings.instance.Groups[savedSide].Items.RemoveAt(index);
@@ -91,33 +99,21 @@ namespace Redwyre.CustomToolbar.Editor
                     };
                     moveRightButton.clicked += () =>
                     {
-                        if (side == ToolbarSide.RightAlignRight) return;
-
                         var savedSide = (int)side;
-                        var index = (int)rootElement.userData;
-
                         var item = ToolbarSettings.instance.Groups[savedSide].Items[index];
 
                         ToolbarSettings.instance.Groups[savedSide].Items.RemoveAt(index);
                         ToolbarSettings.instance.Groups[++savedSide].Items.Add(item);
                     };
-                    return rootElement;
-                };
-                itemList.bindItem = (element, index) =>
-                {
-                    element.userData = index;
-                    var bindableElement = (BindableElement)element;
-
-                    bindableElement.bindingPath = $"{itemList.bindingPath}.Array.data[{index}]";
-                    var prop = settings.FindProperty(bindableElement.bindingPath);
-                    bindableElement.BindProperty(prop);
-
-                    element.Q("MoveLeft").SetEnabled(side != ToolbarSide.LeftAlignLeft);
-                    element.Q("MoveRight").SetEnabled(side != ToolbarSide.RightAlignRight);
                 };
                 itemList.unbindItem = (element, index) =>
                 {
-                    element.userData = -1;
+                    var removeButton = element.Q<Button>("Remove");
+                    var moveLeftButton = element.Q<Button>("MoveLeft");
+                    var moveRightButton = element.Q<Button>("MoveRight");
+                    removeButton.clickable = null;
+                    moveLeftButton.clickable = null;
+                    moveRightButton.clickable = null;
                 };
 
                 lists.Add(itemList);
