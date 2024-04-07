@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 #nullable enable
 
@@ -11,7 +12,15 @@ namespace Redwyre.CustomToolbar.Editor
     public class ToolbarSettings : ScriptableSingleton<ToolbarSettings>
     {
         public bool Enabled = true;
-        public List<ToolbarItem> items = new();
+        public ToolbarItemGroup[] Groups = new ToolbarItemGroup[6];
+
+        public ToolbarSettings()
+        {
+            foreach (var side in Enum.GetValues(typeof(ToolbarSide)).Cast<ToolbarSide>())
+            {
+                Groups[(int)side] = new ToolbarItemGroup(side);
+            }
+        }
 
         public static SerializedObject GetSerializedSettings()
         {

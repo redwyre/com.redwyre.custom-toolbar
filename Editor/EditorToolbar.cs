@@ -13,15 +13,13 @@ namespace Redwyre.CustomToolbar.Editor
     public static class EditorToolbar
     {
         private static readonly Type ToolbarType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.Toolbar");
-        private static ScriptableObject currentToolbar;
+        private static ScriptableObject? currentToolbar;
         private static bool isInitialized;
 
         static EditorToolbar()
         {
             EditorApplication.update -= OnUpdate;
             EditorApplication.update += OnUpdate;
-
-            currentToolbar = ScriptableObject.CreateInstance<ScriptableObject>();
 
             LeftParent = CreateParentElement("ToolbarCustomParentLeft");
             RightParent = CreateParentElement("ToolbarCustomParentRight");

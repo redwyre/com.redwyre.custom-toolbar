@@ -1,5 +1,7 @@
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -15,6 +17,8 @@ namespace Redwyre.CustomToolbar.Editor
         public const SettingsScope defaultScope = SettingsScope.User;
         static string[] defaultKeywords = new[] { "toolbar", "custom" };
 
+        const int MaxEnumItems = (int)ToolbarSide.RightAlignRight + 1;
+
         SerializedObject? settings;
 
         VisualTreeAsset list;
@@ -25,6 +29,9 @@ namespace Redwyre.CustomToolbar.Editor
         {
             list = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarItemSetting.uxml");
             settingsPage = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarSettings.uxml");
+
+            Assert.IsNotNull(list);
+            Assert.IsNotNull(settingsPage);
         }
 
         public static bool IsSettingsAvailable()
@@ -36,22 +43,63 @@ namespace Redwyre.CustomToolbar.Editor
         {
             settings = ToolbarSettings.GetSerializedSettings();
 
-            //var title = new Label() { text = label };
-            //title.AddToClassList("title");
+            //Debug.Log(SerializedObjectUtils.FormatSerializedObjectNames(settings));
 
             settingsPage.CloneTree(rootElement);
-            //rootElement.Add(title);
 
-            //rootElement.Add(new PropertyField(settings.FindProperty(nameof(ToolbarSettings.Enabled))));
-            //rootElement.Add(new PropertyField(settings.FindProperty(nameof(ToolbarSettings.items))));
+            var lists = rootElement.Q<ScrollView>("Lists");
 
-            //rootElement.Add(new ListView(ToolbarSettings.instance.items, makeItem: SettingsMakeItem) { bindingPath = "items" });
-            //rootElement.Add(new ListView(ToolbarItems.Items, makeItem: MakeItem, bindItem: BindItem));
+            foreach (var side in Enum.GetValues(typeof(ToolbarSide)).Cast<ToolbarSide>())
+            {
+                lists.Add(new Label(side.ToString()));
+                var itemList = new ListView()
+                {
+                    name = $"{side}List",
+                    bindingPath = $"Groups.Array.data[{(int)side}].Items",
+                    showBoundCollectionSize = false,
+                    reorderable = true,
+                    reorderMode = ListViewReorderMode.Animated,
+                    showBorder = true,
+                    virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight,
+                };
+
+                itemList.makeItem = () =>
+                {
+                    var templateContainer = list.Instantiate();
+                    var rootElement = templateContainer[0];
+                    rootElement.userData = -1;
+
+                    var removeButton = rootElement.Q<Button>("Remove");
+                    removeButton.clicked += () =>
+                    {
+                        var index = (int)rootElement.userData;
+                        var listProp = settings.FindProperty(itemList.bindingPath);
+                        listProp.DeleteArrayElementAtIndex(index);
+                        listProp.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+                    };
+                    return rootElement;
+                };
+                itemList.bindItem = (element, index) =>
+                {
+                    element.userData = index;
+                    var bindableElement = (BindableElement)element;
+
+                    bindableElement.bindingPath = $"{itemList.bindingPath}.Array.data[{index}]";
+                    var prop = settings.FindProperty(bindableElement.bindingPath);
+                    bindableElement.BindProperty(prop);
+                };
+                itemList.unbindItem = (element, index) =>
+                {
+                    element.userData = -1;
+                };
+
+                lists.Add(itemList);
+            }
 
             rootElement.Q<Label>("Title").text = label;
-            rootElement.Q<ListView>("Items").makeItem = SettingsMakeItem;
-            rootElement.Q<ListView>("Adds").makeItem = MakeItem;
-            rootElement.Q<ListView>("Adds").bindItem = BindItem;
+            //rootElement.Q<ListView>("Items").makeItem = SettingsMakeItem;
+            rootElement.Q<ListView>("Adds").makeItem = AddsMakeItem;
+            rootElement.Q<ListView>("Adds").bindItem = AddsBindItem;
             rootElement.Q<ListView>("Adds").itemsSource = ToolbarItems.Items;
 
             var dummy = new VisualElement();
@@ -59,6 +107,8 @@ namespace Redwyre.CustomToolbar.Editor
             rootElement.Add(dummy);
             rootElement.Bind(settings);
 
+            //Groups.Array.data[0].Items.Array.data[0]
+            //Groups.Array.data[0].Items.Array.data[0]
         }
 
         private void SettingsChanged(SerializedObject settingsObject)
@@ -70,22 +120,21 @@ namespace Redwyre.CustomToolbar.Editor
 
         private void SettingsBindItem(VisualElement element, int index)
         {
+            element.Q<Button>("Remove").clicked += () => { };
+        }
+
+        private void SubListSettingsBindItem(VisualElement element, int index)
+        {
             if (element is TemplateContainer templateContainer)
             {
                 templateContainer.bindingPath = $"items.Array.data[{index}]";
             }
         }
 
-        private VisualElement SettingsMakeItem()
-        {
-            var fullElement = list.Instantiate();
-            var trimmed = fullElement[0];
-            return trimmed;
-        }
-
         private void AddItem(ToolbarItemConfig config)
         {
-            ScriptableSingleton<ToolbarSettings>.instance.items.Add(new ToolbarItem(config.TypeName) { Icon = GetTextureFromIcon(config) });
+            ScriptableSingleton<ToolbarSettings>.instance.Groups[0].Items.Add(new ToolbarItem(config.TypeName) { Icon = GetTextureFromIcon(config) });
+            //settings!.Update();
         }
 
         private static Texture2D? GetTextureFromIcon(ToolbarItemConfig config)
@@ -95,14 +144,16 @@ namespace Redwyre.CustomToolbar.Editor
             return (content != null) ? (content.image as Texture2D) : null;
         }
 
-        private void BindItem(VisualElement element, int index)
+        private void AddsBindItem(VisualElement element, int index)
         {
             var i = ToolbarItems.Items[index];
             element.Q<Label>("Label").text = i.TypeName;
             element.Q<Button>("Button").clicked += () => { AddItem(i); };
         }
 
-        private VisualElement MakeItem()
+
+
+        private VisualElement AddsMakeItem()
         {
             var root = new VisualElement();
             root.style.flexDirection = FlexDirection.Row;

@@ -89,23 +89,21 @@ namespace Redwyre.CustomToolbar.Editor
 
             var configLookup = itemConfigs.ToDictionary(ic => ic.TypeName);
 
-            var toolbarItems = ToolbarSettings.instance.items;
+            var groups = ToolbarSettings.instance.Groups;
 
-            foreach (var item in toolbarItems)
+            foreach (var group in groups)
             {
-                if (configLookup.TryGetValue(item.TypeName, out var config))
+                var groupParent = GetParent(group.ToolbarSide);
+
+                foreach (var item in group.Items)
                 {
-                    if (!item.Enabled)
+                    if (configLookup.TryGetValue(item.TypeName, out var config))
                     {
-                        continue;
+                        var b = CreateToolbarButton(item, config);
+
+                        groupParent.Add(b);
+                        activeElements.Add(b);
                     }
-
-                    var b = CreateToolbarButton(item, config);
-                    var side = item.Side;
-                    var ve = GetParent(side);
-
-                    ve.Add(b);
-                    activeElements.Add(b);
                 }
             }
         }
