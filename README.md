@@ -13,8 +13,35 @@ Toolbar
 Preferences
 ![Preferences](Images~/Preferences.png)
 
+# Installing
 
-## Why
+## From GitHub
+
+From the package manager window, click the + and select the option to use a git url, and paste in https://github.com/redwyre/com.redwyre.custom-toolbar.git
+
+## From OpenUPM
+
+If you are already using OpenUPM you can merge this snippet with your project manifest:
+```
+{
+    "scopedRegistries": [
+        {
+            "name": "package.openupm.com",
+            "url": "https://package.openupm.com",
+            "scopes": [
+                "com.redwyre.custom-toolbar"
+            ]
+        }
+    ],
+    "dependencies": {
+        "com.redwyre.custom-toolbar": "0.1.0"
+    }
+}
+```
+
+For more ways to install with OpenUPM see https://openupm.com/packages/com.redwyre.custom-toolbar/
+
+# Why
 
 After having to manually force a domain reload multiple times I got the idea that it would be great to have a customisable toolbar that I could add it to while the rest of the team could have their own configurations that reflect their workflows.
 
