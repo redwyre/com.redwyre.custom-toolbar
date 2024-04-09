@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System;
+﻿using System;
+using UnityEngine;
 
 #nullable enable
 

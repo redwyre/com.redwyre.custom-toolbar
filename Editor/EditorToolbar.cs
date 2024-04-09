@@ -24,13 +24,13 @@ namespace Redwyre.CustomToolbar.Editor
             LeftParent = CreateParentElement("ToolbarCustomParentLeft");
             RightParent = CreateParentElement("ToolbarCustomParentRight");
 
-            LeftParent.Add(LeftLeftParent = CreateSectionElement(  "ToolbarCustomLeftAlignLeft"));
+            LeftParent.Add(LeftLeftParent = CreateSectionElement("ToolbarCustomLeftAlignLeft"));
             LeftParent.Add(LeftCenterParent = CreateSectionElement("ToolbarCustomLeftAlignCenter", Justify.Center));
-            LeftParent.Add(LeftRightParent = CreateSectionElement( "ToolbarCustomLeftAlignRight", Justify.FlexEnd));
+            LeftParent.Add(LeftRightParent = CreateSectionElement("ToolbarCustomLeftAlignRight", Justify.FlexEnd));
 
             RightParent.Add(RightLeftParent = CreateSectionElement("ToolbarCustomRightAlightLeft"));
             RightParent.Add(RightCenterParent = CreateSectionElement("ToolbarCustomRightAlightCenter", Justify.Center));
-            RightParent.Add(RightRightParent = CreateSectionElement( "ToolbarCustomRightAlightRight", Justify.FlexEnd));
+            RightParent.Add(RightRightParent = CreateSectionElement("ToolbarCustomRightAlightRight", Justify.FlexEnd));
         }
 
         public static VisualElement LeftParent { get; }

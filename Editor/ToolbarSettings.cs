@@ -1,8 +1,6 @@
-using UnityEngine;
-using UnityEditor;
-using System.Collections.Generic;
 using System;
 using System.Linq;
+using UnityEditor;
 
 #nullable enable
 
@@ -30,6 +28,6 @@ namespace Redwyre.CustomToolbar.Editor
         public void Save()
         {
             Save(true);
-        }    
+        }
     }
 }

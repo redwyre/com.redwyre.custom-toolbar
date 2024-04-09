@@ -1,6 +1,5 @@
 # Custom toolbar
-
-Custom Toolbar
+[![openupm](https://img.shields.io/npm/v/com.redwyre.custom-toolbar?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.redwyre.custom-toolbar/)
 
 - Configuration per user in user preferences
 - Easy to extend by writing functions with an attribute
