@@ -13,8 +13,7 @@ namespace Redwyre.CustomToolbar.Editor
     public static class EditorToolbar
     {
         private static readonly Type ToolbarType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.Toolbar");
-        private static ScriptableObject? currentToolbar;
-        private static bool isInitialized;
+        private static ScriptableObject? currentToolbar = null;
 
         static EditorToolbar()
         {
@@ -52,7 +51,7 @@ namespace Redwyre.CustomToolbar.Editor
         private static void OnUpdate()
         {
             // Relying on the fact that toolbar is ScriptableObject and gets deleted when layout changes
-            if (currentToolbar == null || !isInitialized)
+            if (currentToolbar == null)
             {
                 CreateToolbar();
             }
@@ -72,7 +71,6 @@ namespace Redwyre.CustomToolbar.Editor
 
             mRoot.Q("ToolbarZoneLeftAlign").Add(LeftParent);
             mRoot.Q("ToolbarZoneRightAlign").Add(RightParent);
-            isInitialized = true;
         }
 
         public static VisualElement GetSectionParent(ToolbarSide side)

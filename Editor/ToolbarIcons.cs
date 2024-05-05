@@ -7,55 +7,57 @@ using UnityEngine;
 
 #nullable enable
 
-[InitializeOnLoad]
-public static class ToolbarIcons
+namespace Redwyre.CustomToolbar.Editor
 {
-    private const string BasePath = "Packages/com.redwyre.custom-toolbar/FontAwesome/icons/";
-    static readonly Dictionary<string, Sprite> namedIcons = new();
-    static readonly Dictionary<string, Sprite> unitySprites = new();
-
-    static ToolbarIcons()
+    [InitializeOnLoad]
+    public static class ToolbarIcons
     {
-        Load();
-    }
+        private const string BasePath = "Packages/com.redwyre.custom-toolbar/FontAwesome/icons/";
+        static readonly Dictionary<string, Sprite> namedIcons = new();
+        static readonly Dictionary<string, Sprite> unitySprites = new();
 
-    public static void Load()
-    {
-        var spriteGuids = AssetDatabase.FindAssets("t:Sprite", new[] { BasePath });
-        foreach (var spriteGuid in spriteGuids)
+        static ToolbarIcons()
         {
-            var path = AssetDatabase.GUIDToAssetPath(spriteGuid);
-            var asset = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            var relativePath = path.Replace(BasePath, string.Empty).Replace(".png", string.Empty);
-            namedIcons.Add(relativePath, asset);
-        }
-    }
-
-    public static void Unload()
-    {
-        foreach (var s in unitySprites.Values)
-        {
-            Sprite.Destroy(s);
-        }
-        unitySprites.Clear();
-        namedIcons.Clear();
-    }
-
-    public static Sprite? GetIcon(string name)
-    {
-        if (unitySprites.TryGetValue(name, out var sprite))
-        {
-            return sprite;
+            Load();
         }
 
-        var faIconName = name.Contains('/') ? name : $"solid/{name}";
-
-        if (namedIcons.TryGetValue(faIconName, out sprite))
+        public static void Load()
         {
-            return sprite;
+            var spriteGuids = AssetDatabase.FindAssets("t:Sprite", new[] { BasePath });
+            foreach (var spriteGuid in spriteGuids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(spriteGuid);
+                var asset = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                var relativePath = path.Replace(BasePath, string.Empty).Replace(".png", string.Empty);
+                namedIcons.Add(relativePath, asset);
+            }
         }
 
-        var texture = LoadBuiltInTexture(name);
+        public static void Unload()
+        {
+            foreach (var s in unitySprites.Values)
+            {
+                Sprite.Destroy(s);
+            }
+            unitySprites.Clear();
+            namedIcons.Clear();
+        }
+
+        public static Sprite? GetIcon(string name)
+        {
+            if (unitySprites.TryGetValue(name, out var sprite))
+            {
+                return sprite;
+            }
+
+            var faIconName = name.Contains('/') ? name : $"solid/{name}";
+
+            if (namedIcons.TryGetValue(faIconName, out sprite))
+            {
+                return sprite;
+            }
+
+            var texture = LoadBuiltInTexture(name);
 
         if (texture != null)
         {
@@ -67,24 +69,30 @@ public static class ToolbarIcons
             return sprite;
         }
 
-        Debug.LogWarning($"Unable to find icon {name}");
-        return null;
-    }
-
-    static Texture2D? LoadBuiltInTexture(string name)
-    {
-        var texture = EditorGUIUtility.Load(EditorResources.generatedIconsPath + name + ".asset") as Texture2D;
-
-        if (texture == null)
-        {
-            texture = EditorGUIUtility.Load(EditorResources.iconsPath + name + ".png") as Texture2D;
+            Debug.LogWarning($"Unable to find icon {name}");
+            return null;
         }
 
-        if (texture == null)
+        static Texture2D? LoadBuiltInTexture(string name)
         {
-            texture = EditorGUIUtility.Load(name) as Texture2D;
-        }
+            if (EditorGUIUtility.isProSkin)
+            {
+                name = "d_" + name;
+            }
 
-        return texture;
+            var texture = EditorGUIUtility.Load(EditorResources.generatedIconsPath + name + ".asset") as Texture2D;
+
+            if (texture == null)
+            {
+                texture = EditorGUIUtility.Load(EditorResources.iconsPath + name + ".png") as Texture2D;
+            }
+
+            if (texture == null)
+            {
+                texture = EditorGUIUtility.Load(name) as Texture2D;
+            }
+
+            return texture;
+        }
     }
 }
