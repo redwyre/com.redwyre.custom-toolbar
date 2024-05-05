@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Unity.Collections;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -23,16 +24,44 @@ namespace Redwyre.CustomToolbar.Editor
             UnityEditor.PackageManager.UI.Window.Open("");
         }
 
-        [ToolbarItem(Icon = "Folder Icon", ToolTip = "Open Folder")]
+        [ToolbarItem(Icon = "folder-open", ToolTip = "Open Folder")]
         public static void OpenFolder()
         {
             EditorUtility.RevealInFinder(Application.dataPath);
         }
 
-        [ToolbarItem(Icon = "d_winbtn_win_max", ToolTip = "Open Terminal")]
+        [Serializable]
+        public class OpenTerminalOptions
+        {
+            public string terminal = "wt";
+        }
+
+        [ToolbarItem(Icon = "terminal", ToolTip = "Open Terminal")]
         public static void OpenTerminal()
         {
-            Process.Start("wt");
+            // first use configured terminal if any
+            var term = Environment.GetEnvironmentVariable("TERM");
+            if (term != null && Process.Start(term) != null)
+            {
+                return;
+            }
+
+            // use standard platform terminals
+            string[] terminals = Application.platform switch
+            {
+                RuntimePlatform.WindowsEditor => new[] { "wt", "pwsh", "powershell", "cmd" },
+                RuntimePlatform.LinuxEditor => new[] { "/usr/bin/gnome-terminal", "/usr/bin/xterm", "/bin/bash" },
+                RuntimePlatform.OSXEditor => new[] { "Terminal" },
+                _ => throw new NotImplementedException()
+            };
+
+            foreach (var terminal in terminals)
+            {
+                if (Process.Start(terminal) != null)
+                {
+                    break;
+                }
+            }
         }
 
         [ToolbarItem(Icon = "cs Script Icon", ToolTip = "Script Recompile")]
@@ -41,16 +70,19 @@ namespace Redwyre.CustomToolbar.Editor
             CompilationPipeline.RequestScriptCompilation(RequestScriptCompilationOptions.CleanBuildCache);
         }
 
-        [ToolbarItem(Icon = "P4_Updating", ToolTip = "Domain Reload")]
+        [ToolbarItem(Icon = "recycle", ToolTip = "Domain Reload")]
         public static void DomainReload()
         {
             EditorUtility.RequestScriptReload();
         }
 
-        [ToolbarItem(Icon = "Cancel", ToolTip = "Clear PlayerPrefs")]
+        [ToolbarItem(Icon = "user-xmark", ToolTip = "Clear PlayerPrefs")]
         public static void ClearPlayerPrefs()
         {
-            PlayerPrefs.DeleteAll();
+            if (EditorUtility.DisplayDialog("Clear PlayerPrefs", "Are you sure you want to clear PlayerPrefs?", "Clear", "Cancel"))
+            {
+                PlayerPrefs.DeleteAll();
+            }
         }
 
         [ToolbarItem(ToolTip = "Memory Leak Detection", Icons = new[] {
