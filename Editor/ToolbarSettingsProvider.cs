@@ -21,16 +21,16 @@ namespace Redwyre.CustomToolbar.Editor
 
         SerializedObject? settings;
 
-        VisualTreeAsset list;
+        VisualTreeAsset settingItem;
         VisualTreeAsset settingsPage;
 
         public ToolbarSettingsProvider(string path, SettingsScope scopes, IEnumerable<string>? keywords = null)
             : base(path, scopes, keywords)
         {
-            list = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarItemSetting.uxml");
+            settingItem = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarItemSetting.uxml");
             settingsPage = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarSettings.uxml");
 
-            Assert.IsNotNull(list);
+            Assert.IsNotNull(settingItem);
             Assert.IsNotNull(settingsPage);
         }
 
@@ -65,7 +65,7 @@ namespace Redwyre.CustomToolbar.Editor
 
                 itemList.makeItem = () =>
                 {
-                    var templateContainer = list.Instantiate();
+                    var templateContainer = settingItem.Instantiate();
                     var rootElement = templateContainer[0];
                     return rootElement;
                 };
@@ -157,11 +157,10 @@ namespace Redwyre.CustomToolbar.Editor
             //settings!.Update();
         }
 
-        private static Texture2D? GetTextureFromIcon(ToolbarItemConfig config)
+        private static Sprite? GetTextureFromIcon(ToolbarItemConfig config)
         {
-            var content = EditorGUIUtility.IconContent(config.Icon);
-
-            return (content != null) ? (content.image as Texture2D) : null;
+            var sprite = config.Icon != null ? ToolbarIcons.GetIcon(config.Icon) : null;
+            return sprite;
         }
 
         private void AddsBindItem(VisualElement element, int index)
@@ -170,8 +169,6 @@ namespace Redwyre.CustomToolbar.Editor
             element.Q<Label>("Label").text = i.TypeName;
             element.Q<Button>("Button").clicked += () => { AddItem(i); };
         }
-
-
 
         private VisualElement AddsMakeItem()
         {

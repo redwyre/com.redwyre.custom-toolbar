@@ -11,19 +11,6 @@ using UnityEngine.UIElements;
 
 namespace Redwyre.CustomToolbar.Editor
 {
-    public class ToolbarItemConfig
-    {
-        public string TypeName;
-        public Action? Action;
-        public string? Tooltip;
-        public string? Icon;
-        public string? Label;
-
-        public ToolbarItemConfig(string typeName)
-        {
-            TypeName = typeName;
-        }
-    }
 
     [InitializeOnLoad]
     public static class ToolbarItems
@@ -135,7 +122,10 @@ namespace Redwyre.CustomToolbar.Editor
             {
                 var icon = new Image();
                 icon.AddToClassList("unity-editor-toolbar-element__icon");
-                icon.style.backgroundImage = Background.FromTexture2D(item.Icon);
+
+                var b = Background.FromSprite(item.Icon);
+
+                icon.style.backgroundImage = b;
                 icon.style.height = 16;
                 icon.style.width = 16;
                 icon.style.alignSelf = Align.Center;
