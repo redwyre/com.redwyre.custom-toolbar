@@ -19,16 +19,16 @@ namespace Redwyre.CustomToolbar.Editor
 
         SerializedObject? settings;
 
-        VisualTreeAsset list;
+        VisualTreeAsset settingItem;
         VisualTreeAsset settingsPage;
 
         public ToolbarSettingsProvider(string path, SettingsScope scopes, IEnumerable<string>? keywords = null)
             : base(path, scopes, keywords)
         {
-            list = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarItemSetting.uxml");
+            settingItem = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarItemSetting.uxml");
             settingsPage = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.redwyre.custom-toolbar/Editor/ToolbarSettings.uxml");
 
-            Assert.IsNotNull(list);
+            Assert.IsNotNull(settingItem);
             Assert.IsNotNull(settingsPage);
         }
 
@@ -63,7 +63,7 @@ namespace Redwyre.CustomToolbar.Editor
 
                 itemList.makeItem = () =>
                 {
-                    var templateContainer = list.Instantiate();
+                    var templateContainer = settingItem.Instantiate();
                     var rootElement = templateContainer[0];
                     return rootElement;
                 };

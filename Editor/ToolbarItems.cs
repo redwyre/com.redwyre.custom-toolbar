@@ -12,25 +12,6 @@ using UnityEngine.UIElements;
 
 namespace Redwyre.CustomToolbar.Editor
 {
-    public delegate int GroupAction(int? newValue);
-
-    public class ToolbarItemConfig
-    {
-        public string TypeName;
-        public Action? Action;
-        public GroupAction? GroupAction;
-        public ToolbarItemBaseAttribute Attribute;
-
-        public string? Tooltip => Attribute.ToolTip;
-        public string? SettingsIcon => Attribute.SettingsIcon;
-        public string? Label => Attribute.Label;
-
-        public ToolbarItemConfig(ToolbarItemBaseAttribute attribute, string typeName)
-        {
-            Attribute = attribute;
-            TypeName = typeName;
-        }
-    }
 
     [InitializeOnLoad]
     public static class ToolbarItems
@@ -137,8 +118,8 @@ namespace Redwyre.CustomToolbar.Editor
             {
                 foreach (var y in x.Items)
                 {
-                    y.Icons = y.IconNames.Select(icon => Utils.GetTextureFromIcon(icon)).ToArray();
-                    y.SettingsIcon = string.IsNullOrEmpty(y.SettingsIconName) ? null : Utils.GetTextureFromIcon(y.SettingsIconName!);
+                    y.Icons = y.IconNames.Select(icon => Utils.GeSpriteFromIcon(icon)).ToArray();
+                    y.SettingsIcon = string.IsNullOrEmpty(y.SettingsIconName) ? null : Utils.GeSpriteFromIcon(y.SettingsIconName!);
                 }
             }
 
@@ -224,7 +205,7 @@ namespace Redwyre.CustomToolbar.Editor
             {
                 var icon = new Image();
                 icon.AddToClassList("unity-editor-toolbar-element__icon");
-                icon.style.backgroundImage = Background.FromTexture2D(item.Icons[index]);
+                icon.style.backgroundImage = Background.FromSprite(item.Icons[index]);
                 icon.style.height = 16;
                 icon.style.width = 16;
                 icon.style.alignSelf = Align.Center;
@@ -251,7 +232,10 @@ namespace Redwyre.CustomToolbar.Editor
             {
                 var icon = new Image();
                 icon.AddToClassList("unity-editor-toolbar-element__icon");
-                icon.style.backgroundImage = Background.FromTexture2D(item.Icons.FirstOrDefault());
+
+                var b = Background.FromSprite(item.Icons.FirstOrDefault());
+
+                icon.style.backgroundImage = b;
                 icon.style.height = 16;
                 icon.style.width = 16;
                 icon.style.alignSelf = Align.Center;

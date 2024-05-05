@@ -36,7 +36,7 @@ namespace Redwyre.CustomToolbar.Editor.UIElements
 
         public string bindingPath { get; set; }
 
-        public Object value { get => image; set => image = value as Texture; }
+        public Object value { get => (Object)image ?? (Object)sprite ?? (Object)vectorImage; set => SetValueWithoutNotify(value); }
 
         public BindableImage()
         {
@@ -44,7 +44,21 @@ namespace Redwyre.CustomToolbar.Editor.UIElements
 
         public void SetValueWithoutNotify(Object newValue)
         {
-            image = newValue as Texture;
+            switch (newValue)
+            {
+                case Texture t:
+                    image = t;
+                    break;
+                case Sprite s:
+                    sprite = s;
+                    break;
+                case VectorImage v:
+                    vectorImage = v;
+                    break;
+                default:
+                    image = null;
+                    break;
+            }
         }
     }
 }

@@ -12,11 +12,17 @@ namespace Redwyre.CustomToolbar.Editor
 {
     public static class Utils
     {
-        public static Texture2D? GetTextureFromIcon(string icon)
-        {
-            var content = EditorGUIUtility.IconContent(icon);
+        //public static Texture2D? GetTextureFromIcon(string icon)
+        //{
+        //    var content = EditorGUIUtility.IconContent(icon);
 
-            return (content != null) ? (content.image as Texture2D) : null;
+        //    return (content != null) ? (content.image as Texture2D) : null;
+        //}
+
+        public static Sprite? GeSpriteFromIcon(string? icon)
+        {
+            var sprite = icon != null ? ToolbarIcons.GetIcon(icon) : null;
+            return sprite;
         }
 
         public static VisualElement CreateElement(string name, Justify justify = Justify.FlexStart)
