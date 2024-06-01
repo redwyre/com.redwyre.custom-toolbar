@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.1.2] - 2024-06-01
+
+### Changed
+- Changed script recompile action to force full recompile
+
+## [0.1.1] - 2024-04-09
+
+### Changed
+- Removed unused usings to fix compile error
+
 ## [0.1.0] - 2024-04-08
 
 ### Added

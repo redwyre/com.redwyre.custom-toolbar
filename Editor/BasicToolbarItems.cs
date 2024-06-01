@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEngine;
 
 #nullable enable
@@ -35,7 +36,7 @@ namespace Redwyre.CustomToolbar.Editor
         [ToolbarItem(Icon = "cs Script Icon", ToolTip = "Script Recompile")]
         public static void ScriptRecompile()
         {
-            UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
+            CompilationPipeline.RequestScriptCompilation(RequestScriptCompilationOptions.CleanBuildCache);
         }
 
         [ToolbarItem(Icon = "P4_Updating", ToolTip = "Domain Reload")]
