@@ -3,7 +3,7 @@
         <ui:VisualElement style="flex-grow: 1;">
             <ui:Label tabindex="-1" parse-escape-sequences="false" display-tooltip-when-elided="true" binding-path="TypeName" enable-rich-text="false" name="Title" />
             <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                <Redwyre.CustomToolbar.Editor.BindableImage binding-path="Icon" style="width: 32px; height: 32px; flex-shrink: 0;" />
+                <Redwyre.CustomToolbar.Editor.UIElements.BindableImage binding-path="Icon" style="width: 32px; height: 32px; flex-shrink: 0;" />
                 <uie:PropertyField name="Icon" binding-path="Icon" style="min-height: 16px; min-width: 16px; flex-grow: 1;" />
             </ui:VisualElement>
         </ui:VisualElement>

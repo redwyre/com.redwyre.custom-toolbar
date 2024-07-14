@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Redwyre.CustomToolbar.Editor.UIElements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,12 +12,15 @@ using UnityEngine.UIElements;
 
 namespace Redwyre.CustomToolbar.Editor
 {
+    public delegate int GroupAction(int? newValue);
+
     public class ToolbarItemConfig
     {
         public string TypeName;
         public Action? Action;
+        public GroupAction? GroupAction;
         public string? Tooltip;
-        public string? Icon;
+        public string[]? Icons;
         public string? Label;
 
         public ToolbarItemConfig(string typeName)
@@ -57,8 +61,22 @@ namespace Redwyre.CustomToolbar.Editor
                 {
                     var c = new ToolbarItemConfig(method.Name);
                     c.Tooltip = attr.ToolTip;
-                    c.Action = (Action)Delegate.CreateDelegate(typeof(Action), method);
-                    c.Icon = attr.Icon;
+
+                    if (SameSignature<GroupAction>(method))
+                    {
+                        c.GroupAction = (GroupAction)Delegate.CreateDelegate(typeof(GroupAction), method);
+                    }
+                    else if (SameSignature<Action>(method))
+                    {
+                        c.Action = (Action)Delegate.CreateDelegate(typeof(Action), method);
+                    }
+                    else
+                    {
+                        Debug.LogError($"Method {method.Name} does not match expected signature");
+                        continue;
+                    }
+
+                    c.Icons = attr.Icons;
                     c.Label = attr.Label;
 
                     l.Add(c);
@@ -97,10 +115,31 @@ namespace Redwyre.CustomToolbar.Editor
                 {
                     if (configLookup.TryGetValue(item.TypeName, out var config))
                     {
-                        var b = CreateToolbarButton(item, config);
+                        if (config.GroupAction != null && item.Icons != null)
+                        {
+                            var groupItems = new List<ToolbarToggle>();
 
-                        groupParent.Add(b);
-                        activeElements.Add(b);
+                            foreach (var icon in item.Icons)
+                            {
+                                var toggle = CreateToolbarToggle(item, config, groupItems.Count);
+                                groupItems.Add(toggle);
+                            }
+
+                            var strip = CreateToolbarGroup(item, config, groupItems);
+                            groupParent.Add(strip);
+                            activeElements.Add(strip);
+                        }
+                        else if (config.Action != null)
+                        {
+                            var b = CreateToolbarButton(item, config);
+
+                            groupParent.Add(b);
+                            activeElements.Add(b);
+                        }
+                        else
+                        {
+                            Debug.LogError($"Error instantiating toolbar item for {item.TypeName}");
+                        }
                     }
                 }
             }
@@ -118,6 +157,52 @@ namespace Redwyre.CustomToolbar.Editor
                 ToolbarSide.RightAlignRight => EditorToolbar.RightRightParent,
                 _ => throw new InvalidOperationException("Invalid side"),
             };
+        }
+
+        public static VisualElement CreateToolbarGroup(ToolbarItem item, ToolbarItemConfig config, List<ToolbarToggle> groupItems)
+        {
+            var group = new ToolbarStrip();
+
+            group.groupAction = config.GroupAction;
+
+            // fixme 
+
+            for (int i = 0; i < groupItems.Count; ++i)
+            {
+                var groupItem = groupItems[i];
+
+                group.AddButton(groupItem, i);
+            }
+
+            group.Init();
+
+            return group;
+        }
+
+        public static ToolbarToggle CreateToolbarToggle(ToolbarItem item, ToolbarItemConfig config, int index)
+        {
+            var toggle = new ToolbarToggle();
+            toggle.tooltip = config.Tooltip;
+            toggle.AddToClassList("unity-editor-toolbar-element");
+
+
+            if (config.Label != null)
+            {
+                toggle.text = config.Label;
+            }
+
+            if (item.Icons != null && item.Icons.Length >= index)
+            {
+                var icon = new Image();
+                icon.AddToClassList("unity-editor-toolbar-element__icon");
+                icon.style.backgroundImage = Background.FromTexture2D(item.Icons[index]);
+                icon.style.height = 16;
+                icon.style.width = 16;
+                icon.style.alignSelf = Align.Center;
+                toggle.Add(icon);
+            }
+
+            return toggle;
         }
 
         public static VisualElement CreateToolbarButton(ToolbarItem item, ToolbarItemConfig config)
@@ -143,6 +228,18 @@ namespace Redwyre.CustomToolbar.Editor
             }
 
             return button;
+        }
+
+        static bool SameSignature<T>(MethodInfo methodInfo)
+        {
+            var delegateType = typeof(T).GetMethod("Invoke");
+
+            if (delegateType.ReturnType != methodInfo.ReturnType)
+                return false;
+
+            var delegateParams = delegateType.GetParameters().Select(p => p.ParameterType);
+            var methodParams = methodInfo.GetParameters().Select(p => p.ParameterType);
+            return delegateParams.SequenceEqual(methodParams);
         }
     }
 }

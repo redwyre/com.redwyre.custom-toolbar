@@ -9,8 +9,10 @@ namespace Redwyre.CustomToolbar.Editor
     public class ToolbarItem
     {
         public string TypeName;
-        public Texture2D? Icon;
+        public Texture2D?[] Icons = Array.Empty<Texture2D?>();
         public string? Settings;
+
+        public Texture2D? Icon;
 
         public ToolbarItem(string typeName)
         {

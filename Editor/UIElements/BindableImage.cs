@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
-namespace Redwyre.CustomToolbar.Editor
+namespace Redwyre.CustomToolbar.Editor.UIElements
 {
     public class BindableImage : Image, IBindable, INotifyValueChanged<Object>
     {

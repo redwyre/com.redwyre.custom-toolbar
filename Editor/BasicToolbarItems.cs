@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using Unity.Collections;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 #nullable enable
 
@@ -49,6 +51,29 @@ namespace Redwyre.CustomToolbar.Editor
         public static void ClearPlayerPrefs()
         {
             PlayerPrefs.DeleteAll();
+        }
+
+        [ToolbarItem(ToolTip = "Memory Leak Detection", Icons = new[] { "0", "1", "2" })]
+        public static int MemoryLeakDetection(int? newValue)
+        {
+            if (newValue.HasValue)
+            {
+                NativeLeakDetection.Mode = newValue.Value switch
+                {
+                    1 => NativeLeakDetectionMode.Enabled,
+                    2 => NativeLeakDetectionMode.EnabledWithStackTrace,
+                    _ => NativeLeakDetectionMode.Disabled,
+                };
+
+                Debug.Log($"NativeLeakDetection.Mode set to {NativeLeakDetection.Mode}");
+            }
+
+            return NativeLeakDetection.Mode switch
+            {
+                NativeLeakDetectionMode.Enabled => 1,
+                NativeLeakDetectionMode.EnabledWithStackTrace => 2,
+                _ => 0
+            };
         }
     }
 }
