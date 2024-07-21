@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.1.3] - 2024-07-21
+
+### Added
+- Added support for toggle strips to be added to the toolbar with a single function
+- Added basic function for setting memory leak detection mode
+
 ## [0.1.2] - 2024-06-01
 
 ### Changed

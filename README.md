@@ -40,6 +40,42 @@ If you are already using OpenUPM you can merge this snippet with your project ma
 
 For more ways to install with OpenUPM see https://openupm.com/packages/com.redwyre.custom-toolbar/
 
+# Adding your own
+
+## Adding a button
+
+To add a button to the toolbar, create a new static function in a class, and add the `[ToolbarButton]` attribute to it. The function should take no parameters and return void.
+
+```csharp
+using Redwyre.CustomToolbar.Editor;
+
+public static class BasicToolbarItems
+{
+    [ToolbarItem(Icon = "Settings", ToolTip = "Project Settings")]
+    public static void OpenProjectSettings()
+    {
+        EditorApplication.ExecuteMenuItem("Edit/Project Settings...");
+    }
+}
+```
+
+## Adding a toggle strip
+
+To add a toggle strip to the toolbar, create a new static function in a class, and add the `[ToolbarItem]` attribute to it with the same number of icons as options. The function should take an `int?` parameter and return an int. The function is passed null when the toolbar wants to get the current value without changing it.
+
+```csharp
+    [ToolbarItem(ToolTip = "Memory Leak Detection", Icons = new[] {"MemoryLeakDetection_0.png", "MemoryLeakDetection_1.png", "MemoryLeakDetection_2.png" })]
+    public static int MemoryLeakDetection(int? newValue)
+    {
+        if (newValue.HasValue)
+        {
+            // Set the new value here     
+        }
+
+        // Get and return the current value here
+    }
+```
+
 # Why
 
 After having to manually force a domain reload multiple times I got the idea that it would be great to have a customisable toolbar that I could add it to while the rest of the team could have their own configurations that reflect their workflows.
