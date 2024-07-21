@@ -27,7 +27,7 @@ namespace Redwyre.CustomToolbar.Editor.UIElements
 
             if (toggle.value)
             {
-                ResetToggles(index);
+                UpdateToggles(index);
                 groupAction.Invoke(index);
 
                 selected = index;
@@ -36,7 +36,7 @@ namespace Redwyre.CustomToolbar.Editor.UIElements
             else
             {
                 // toggle with previously selected
-                ResetToggles();
+                UpdateToggles();
                 toggles[previouslySelected].SetValueWithoutNotify(true);
                 groupAction?.Invoke(previouslySelected);
                 (selected, previouslySelected) = (previouslySelected, selected);
@@ -54,23 +54,27 @@ namespace Redwyre.CustomToolbar.Editor.UIElements
             Add(toggle);
         }
 
-        void ResetToggles(int leaveIndex = -1)
+        void UpdateToggles(int selectedIndex = -1)
         {
             foreach (var (index, toggle) in toggles)
             {
-                if (index == leaveIndex)
+                if (index == selectedIndex)
                     continue;
 
                 toggle.SetValueWithoutNotify(false);
+            }
+
+            if (selectedIndex != -1 && toggles.TryGetValue(selectedIndex, out var selectedToggle))
+            {
+                selectedToggle.SetValueWithoutNotify(true);
             }
         }
 
         public void Init()
         {
             EditorToolbarUtility.SetupChildrenAsButtonStrip(this);
-            ResetToggles();
             selected = groupAction.Invoke(null);
-            toggles[selected].SetValueWithoutNotify(true);
+            UpdateToggles(selected);
         }
     }
 }
