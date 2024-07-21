@@ -53,7 +53,10 @@ namespace Redwyre.CustomToolbar.Editor
             PlayerPrefs.DeleteAll();
         }
 
-        [ToolbarItem(ToolTip = "Memory Leak Detection", Icons = new[] { "0", "1", "2" })]
+        [ToolbarItem(ToolTip = "Memory Leak Detection", Icons = new[] {
+            "Packages/com.redwyre.custom-toolbar/Editor Default Resources/Icons/MemoryLeakDetection_0.png",
+            "Packages/com.redwyre.custom-toolbar/Editor Default Resources/Icons/MemoryLeakDetection_1.png",
+            "Packages/com.redwyre.custom-toolbar/Editor Default Resources/Icons/MemoryLeakDetection_2.png" })]
         public static int MemoryLeakDetection(int? newValue)
         {
             if (newValue.HasValue)

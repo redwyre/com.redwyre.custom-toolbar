@@ -185,6 +185,9 @@ namespace Redwyre.CustomToolbar.Editor
             toggle.tooltip = config.Tooltip;
             toggle.AddToClassList("unity-editor-toolbar-element");
 
+            var checkmark = toggle.Q<VisualElement>("unity-checkmark");
+
+            var visualElement = toggle.Q<VisualElement>("unity-checkmark").parent;
 
             if (config.Label != null)
             {
@@ -199,7 +202,9 @@ namespace Redwyre.CustomToolbar.Editor
                 icon.style.height = 16;
                 icon.style.width = 16;
                 icon.style.alignSelf = Align.Center;
-                toggle.Add(icon);
+                visualElement.Add(icon);
+
+                checkmark.style.display = DisplayStyle.None;
             }
 
             return toggle;
