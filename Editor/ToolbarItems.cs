@@ -105,9 +105,9 @@ namespace Redwyre.CustomToolbar.Editor
 
             var configLookup = itemConfigs.ToDictionary(ic => ic.TypeName);
 
-            var groups = ToolbarSettings.instance.Groups;
+            var sections = ToolbarSettings.instance.Sections;
 
-            foreach (var group in groups)
+            foreach (var group in sections)
             {
                 var groupParent = GetParent(group.ToolbarSide);
 

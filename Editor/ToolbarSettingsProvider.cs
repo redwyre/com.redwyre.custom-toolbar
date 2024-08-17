@@ -17,8 +17,6 @@ namespace Redwyre.CustomToolbar.Editor
         public const SettingsScope defaultScope = SettingsScope.User;
         static string[] defaultKeywords = new[] { "toolbar", "custom" };
 
-        const int MaxEnumItems = (int)ToolbarSide.RightAlignRight + 1;
-
         SerializedObject? settings;
 
         VisualTreeAsset list;
@@ -55,7 +53,7 @@ namespace Redwyre.CustomToolbar.Editor
                 var itemList = new ListView()
                 {
                     name = $"{side}List",
-                    bindingPath = $"Groups.Array.data[{(int)side}].Items",
+                    bindingPath = $"{nameof(ToolbarSettings.Sections)}.Array.data[{(int)side}].Items",
                     showBoundCollectionSize = false,
                     reorderable = true,
                     reorderMode = ListViewReorderMode.Animated,
@@ -87,23 +85,23 @@ namespace Redwyre.CustomToolbar.Editor
                     removeButton.clicked += () =>
                     {
                         var savedSide = (int)side;
-                        ToolbarSettings.instance.Groups[savedSide].Items.RemoveAt(index);
+                        ToolbarSettings.instance.Sections[savedSide].Items.RemoveAt(index);
                     };
                     moveLeftButton.clicked += () =>
                     {
                         var savedSide = (int)side;
-                        var item = ToolbarSettings.instance.Groups[savedSide].Items[index];
+                        var item = ToolbarSettings.instance.Sections[savedSide].Items[index];
 
-                        ToolbarSettings.instance.Groups[savedSide].Items.RemoveAt(index);
-                        ToolbarSettings.instance.Groups[--savedSide].Items.Add(item);
+                        ToolbarSettings.instance.Sections[savedSide].Items.RemoveAt(index);
+                        ToolbarSettings.instance.Sections[--savedSide].Items.Add(item);
                     };
                     moveRightButton.clicked += () =>
                     {
                         var savedSide = (int)side;
-                        var item = ToolbarSettings.instance.Groups[savedSide].Items[index];
+                        var item = ToolbarSettings.instance.Sections[savedSide].Items[index];
 
-                        ToolbarSettings.instance.Groups[savedSide].Items.RemoveAt(index);
-                        ToolbarSettings.instance.Groups[++savedSide].Items.Add(item);
+                        ToolbarSettings.instance.Sections[savedSide].Items.RemoveAt(index);
+                        ToolbarSettings.instance.Sections[++savedSide].Items.Add(item);
                     };
                 };
                 itemList.unbindItem = (element, index) =>
@@ -160,7 +158,7 @@ namespace Redwyre.CustomToolbar.Editor
                 Icon = icons.Length > 0 ? icons[0] : null,
             };
 
-            ScriptableSingleton<ToolbarSettings>.instance.Groups[0].Items.Add(item);
+            ScriptableSingleton<ToolbarSettings>.instance.Sections[0].Items.Add(item);
             //settings!.Update();
         }
 
@@ -177,8 +175,6 @@ namespace Redwyre.CustomToolbar.Editor
             element.Q<Label>("Label").text = i.TypeName;
             element.Q<Button>("Button").clicked += () => { AddItem(i); };
         }
-
-
 
         private VisualElement AddsMakeItem()
         {

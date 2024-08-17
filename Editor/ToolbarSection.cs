@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Redwyre.CustomToolbar.Editor
 {
     [Serializable]
-    public class ToolbarItemGroup
+    public class ToolbarSection
     {
         [SerializeField]
         ToolbarSide toolbarSide;
@@ -14,7 +14,7 @@ namespace Redwyre.CustomToolbar.Editor
 
         public List<ToolbarItem> Items = new();
 
-        public ToolbarItemGroup(ToolbarSide toolbarSide)
+        public ToolbarSection(ToolbarSide toolbarSide)
         {
             this.toolbarSide = toolbarSide;
         }

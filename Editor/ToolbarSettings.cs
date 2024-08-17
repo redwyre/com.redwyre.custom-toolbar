@@ -10,13 +10,13 @@ namespace Redwyre.CustomToolbar.Editor
     public class ToolbarSettings : ScriptableSingleton<ToolbarSettings>
     {
         public bool Enabled = true;
-        public ToolbarItemGroup[] Groups = new ToolbarItemGroup[6];
+        public ToolbarSection[] Sections = new ToolbarSection[6];
 
         public ToolbarSettings()
         {
             foreach (var side in Enum.GetValues(typeof(ToolbarSide)).Cast<ToolbarSide>())
             {
-                Groups[(int)side] = new ToolbarItemGroup(side);
+                Sections[(int)side] = new ToolbarSection(side);
             }
         }
 
