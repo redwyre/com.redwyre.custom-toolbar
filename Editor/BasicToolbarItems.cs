@@ -24,7 +24,7 @@ namespace Redwyre.CustomToolbar.Editor
             UnityEditor.PackageManager.UI.Window.Open("");
         }
 
-        [ToolbarItem(Icon = "folder-open", ToolTip = "Open Folder")]
+        [ToolbarItem(Icon = "fa:solid/folder-open", ToolTip = "Open Folder")]
         public static void OpenFolder()
         {
             EditorUtility.RevealInFinder(Application.dataPath);
@@ -36,7 +36,7 @@ namespace Redwyre.CustomToolbar.Editor
             public string terminal = "wt";
         }
 
-        [ToolbarItem(Icon = "terminal", ToolTip = "Open Terminal")]
+        [ToolbarItem(Icon = "fa:solid/terminal", ToolTip = "Open Terminal")]
         public static void OpenTerminal()
         {
             // first use configured terminal if any
@@ -70,13 +70,13 @@ namespace Redwyre.CustomToolbar.Editor
             CompilationPipeline.RequestScriptCompilation(RequestScriptCompilationOptions.CleanBuildCache);
         }
 
-        [ToolbarItem(Icon = "recycle", ToolTip = "Domain Reload")]
+        [ToolbarItem(Icon = "fa:solid/recycle", ToolTip = "Domain Reload")]
         public static void DomainReload()
         {
             EditorUtility.RequestScriptReload();
         }
 
-        [ToolbarItem(Icon = "user-xmark", ToolTip = "Clear PlayerPrefs")]
+        [ToolbarItem(Icon = "fa:solid/user-xmark", ToolTip = "Clear PlayerPrefs")]
         public static void ClearPlayerPrefs()
         {
             if (EditorUtility.DisplayDialog("Clear PlayerPrefs", "Are you sure you want to clear PlayerPrefs?", "Clear", "Cancel"))

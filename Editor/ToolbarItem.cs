@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 #nullable enable
 
@@ -10,11 +11,11 @@ namespace Redwyre.CustomToolbar.Editor
     {
         public string TypeName;
         [NonSerialized]
-        public Sprite?[] Icons = Array.Empty<Sprite?>();
+        public Object?[] Icons = Array.Empty<Object?>();
         public string[] IconNames = Array.Empty<string>();
         public string? Settings;
         public string? SettingsIconName;
-        public Sprite? SettingsIcon;
+        public Object? SettingsIcon;
 
         public ToolbarItem(string typeName)
         {

@@ -205,7 +205,7 @@ namespace Redwyre.CustomToolbar.Editor
             {
                 var icon = new Image();
                 icon.AddToClassList("unity-editor-toolbar-element__icon");
-                icon.style.backgroundImage = Background.FromSprite(item.Icons[index]);
+                icon.style.backgroundImage = Utils.BackgroundFromObject(item.Icons[index]);
                 icon.style.height = 16;
                 icon.style.width = 16;
                 icon.style.alignSelf = Align.Center;
@@ -233,7 +233,7 @@ namespace Redwyre.CustomToolbar.Editor
                 var icon = new Image();
                 icon.AddToClassList("unity-editor-toolbar-element__icon");
 
-                var b = Background.FromSprite(item.Icons.FirstOrDefault());
+                var b = Utils.BackgroundFromObject(item.Icons.FirstOrDefault());
 
                 icon.style.backgroundImage = b;
                 icon.style.height = 16;

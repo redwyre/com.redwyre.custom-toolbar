@@ -1,6 +1,6 @@
 {
   "name": "com.redwyre.custom-toolbar",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "displayName": "Custom Toolbar",
   "description": "A customisable and extendable toolbar for Unity",
   "unity": "2022.3",
@@ -12,5 +12,8 @@
     "name": "Simon Stevenson",
     "email": "redwyre@redwyre.com",
     "url": "https://redwyre.com"
+  },
+  "dependencies": {
+    "com.unity.vectorgraphics": "2.0.0-preview.24"
   }
 }

@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 #nullable enable
 
@@ -19,7 +20,7 @@ namespace Redwyre.CustomToolbar.Editor
         //    return (content != null) ? (content.image as Texture2D) : null;
         //}
 
-        public static Sprite? GeSpriteFromIcon(string? icon)
+        public static Object? GeSpriteFromIcon(string? icon)
         {
             var sprite = icon != null ? ToolbarIcons.GetIcon(icon) : null;
             return sprite;
@@ -39,7 +40,7 @@ namespace Redwyre.CustomToolbar.Editor
             };
         }
 
-        static public bool SameSignature<T>(MethodInfo methodInfo)
+        public static bool SameSignature<T>(MethodInfo methodInfo)
         {
             var delegateType = typeof(T).GetMethod("Invoke");
 
@@ -49,6 +50,31 @@ namespace Redwyre.CustomToolbar.Editor
             var delegateParams = delegateType.GetParameters().Select(p => p.ParameterType);
             var methodParams = methodInfo.GetParameters().Select(p => p.ParameterType);
             return delegateParams.SequenceEqual(methodParams);
+        }
+
+        public static Background BackgroundFromObject(Object? obj)
+        {
+            if (obj is Texture2D texture2D)
+            {
+                return Background.FromTexture2D(texture2D);
+            }
+
+            if (obj is RenderTexture renderTexture)
+            {
+                return Background.FromRenderTexture(renderTexture);
+            }
+
+            if (obj is Sprite sprite)
+            {
+                return Background.FromSprite(sprite);
+            }
+
+            if (obj is VectorImage vectorImage)
+            {
+                return Background.FromVectorImage(vectorImage);
+            }
+
+            return default;
         }
     }
 }
