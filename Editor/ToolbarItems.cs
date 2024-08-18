@@ -19,12 +19,15 @@ namespace Redwyre.CustomToolbar.Editor
         public string TypeName;
         public Action? Action;
         public GroupAction? GroupAction;
-        public string? Tooltip;
-        public string[]? Icons;
-        public string? Label;
+        public ToolbarItemBaseAttribute Attribute;
 
-        public ToolbarItemConfig(string typeName)
+        public string? Tooltip => Attribute.ToolTip;
+        public string? SettingsIcon => Attribute.SettingsIcon;
+        public string? Label => Attribute.Label;
+
+        public ToolbarItemConfig(ToolbarItemBaseAttribute attribute, string typeName)
         {
+            Attribute = attribute;
             TypeName = typeName;
         }
     }
@@ -51,7 +54,7 @@ namespace Redwyre.CustomToolbar.Editor
             var methods = Assembly.GetCallingAssembly()
                 .GetTypes()
                 .SelectMany(t => t.GetMethods())
-                .Select(m => (methodInfo: m, attribute: m.GetCustomAttribute<ToolbarItemAttribute>()))
+                .Select(m => (methodInfo: m, attribute: m.GetCustomAttribute<ToolbarItemBaseAttribute>()))
                 .Where(x => x.attribute != null)
                 .ToArray();
 
@@ -59,25 +62,50 @@ namespace Redwyre.CustomToolbar.Editor
             {
                 try
                 {
-                    var c = new ToolbarItemConfig(method.Name);
-                    c.Tooltip = attr.ToolTip;
+                    var c = new ToolbarItemConfig(attr, method.Name);
 
-                    if (SameSignature<GroupAction>(method))
+                    switch (attr)
                     {
-                        c.GroupAction = (GroupAction)Delegate.CreateDelegate(typeof(GroupAction), method);
-                    }
-                    else if (SameSignature<Action>(method))
-                    {
-                        c.Action = (Action)Delegate.CreateDelegate(typeof(Action), method);
-                    }
-                    else
-                    {
-                        Debug.LogError($"Method {method.Name} does not match expected signature");
-                        continue;
-                    }
+                        case ToolbarItemAttribute itemAttr:
+                            {
+                                if (!Utils.SameSignature<Action>(method))
+                                {
+                                    Debug.LogError($"Method {method.Name} does not match expected signature for {nameof(ToolbarItemAttribute)}");
+                                    continue;
+                                }
 
-                    c.Icons = attr.Icons;
-                    c.Label = attr.Label;
+                                c.Action = (Action)Delegate.CreateDelegate(typeof(Action), method);
+
+                                if (itemAttr.Icon == null)
+                                {
+                                    Debug.LogError($"No icon specified for {method.Name} in {nameof(ToolbarItemAttribute)}");
+                                    continue;
+                                }
+                            }
+                            break;
+                        case ToolbarItemGroupAttribute groupAttr:
+                            {
+                                if (!Utils.SameSignature<GroupAction>(method))
+                                {
+                                    Debug.LogError($"Method {method.Name} does not match expected signature for {nameof(ToolbarItemGroupAttribute)}");
+                                    continue;
+                                }
+
+                                c.GroupAction = (GroupAction)Delegate.CreateDelegate(typeof(GroupAction), method);
+
+                                if (groupAttr.Icons.Length == 0)
+                                {
+                                    Debug.LogError($"No icons specified for {method.Name} in {nameof(ToolbarItemGroupAttribute)}");
+                                    continue;
+                                }
+                            }
+                            break;
+                        default:
+                            {
+                                Debug.LogError($"Unknown attribute for {method.Name}");
+                                continue;
+                            }
+                    }
 
                     l.Add(c);
                 }
@@ -103,13 +131,25 @@ namespace Redwyre.CustomToolbar.Editor
                 return;
             }
 
+
+            // update textures in place
+            foreach (var x in ToolbarSettings.instance.Sections)
+            {
+                foreach (var y in x.Items)
+                {
+                    y.Icons = y.IconNames.Select(icon => Utils.GetTextureFromIcon(icon)).ToArray();
+                    y.SettingsIcon = string.IsNullOrEmpty(y.SettingsIconName) ? null : Utils.GetTextureFromIcon(y.SettingsIconName!);
+                }
+            }
+
+
             var configLookup = itemConfigs.ToDictionary(ic => ic.TypeName);
 
             var sections = ToolbarSettings.instance.Sections;
 
             foreach (var group in sections)
             {
-                var groupParent = GetParent(group.ToolbarSide);
+                var sectionParent = EditorToolbar.GetSectionParent(group.ToolbarSide);
 
                 foreach (var item in group.Items)
                 {
@@ -126,14 +166,14 @@ namespace Redwyre.CustomToolbar.Editor
                             }
 
                             var strip = CreateToolbarGroup(item, config, groupItems);
-                            groupParent.Add(strip);
+                            sectionParent.Add(strip);
                             activeElements.Add(strip);
                         }
                         else if (config.Action != null)
                         {
                             var b = CreateToolbarButton(item, config);
 
-                            groupParent.Add(b);
+                            sectionParent.Add(b);
                             activeElements.Add(b);
                         }
                         else
@@ -143,20 +183,6 @@ namespace Redwyre.CustomToolbar.Editor
                     }
                 }
             }
-        }
-
-        public static VisualElement GetParent(ToolbarSide side)
-        {
-            return side switch
-            {
-                ToolbarSide.LeftAlignLeft => EditorToolbar.LeftLeftParent,
-                ToolbarSide.LeftAlignCenter => EditorToolbar.LeftCenterParent,
-                ToolbarSide.LeftAlignRight => EditorToolbar.LeftRightParent,
-                ToolbarSide.RightAlignLeft => EditorToolbar.RightLeftParent,
-                ToolbarSide.RightAlignCenter => EditorToolbar.RightCenterParent,
-                ToolbarSide.RightAlignRight => EditorToolbar.RightRightParent,
-                _ => throw new InvalidOperationException("Invalid side"),
-            };
         }
 
         public static VisualElement CreateToolbarGroup(ToolbarItem item, ToolbarItemConfig config, List<ToolbarToggle> groupItems)
@@ -221,11 +247,11 @@ namespace Redwyre.CustomToolbar.Editor
                 button.text = config.Label;
             }
 
-            if (item.Icon != null)
+            if (item.Icons.FirstOrDefault() != null)
             {
                 var icon = new Image();
                 icon.AddToClassList("unity-editor-toolbar-element__icon");
-                icon.style.backgroundImage = Background.FromTexture2D(item.Icon);
+                icon.style.backgroundImage = Background.FromTexture2D(item.Icons.FirstOrDefault());
                 icon.style.height = 16;
                 icon.style.width = 16;
                 icon.style.alignSelf = Align.Center;
@@ -233,18 +259,6 @@ namespace Redwyre.CustomToolbar.Editor
             }
 
             return button;
-        }
-
-        static bool SameSignature<T>(MethodInfo methodInfo)
-        {
-            var delegateType = typeof(T).GetMethod("Invoke");
-
-            if (delegateType.ReturnType != methodInfo.ReturnType)
-                return false;
-
-            var delegateParams = delegateType.GetParameters().Select(p => p.ParameterType);
-            var methodParams = methodInfo.GetParameters().Select(p => p.ParameterType);
-            return delegateParams.SequenceEqual(methodParams);
         }
     }
 }

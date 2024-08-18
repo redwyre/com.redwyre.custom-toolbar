@@ -151,22 +151,15 @@ namespace Redwyre.CustomToolbar.Editor
 
         private void AddItem(ToolbarItemConfig config)
         {
-            var icons = config.Icons.Select(icon => GetTextureFromIcon(icon)).ToArray();
+            //var icons = config.Icons.Select(icon => GetTextureFromIcon(icon)).ToArray();
             var item = new ToolbarItem(config.TypeName)
             {
-                Icons = icons,
-                Icon = icons.Length > 0 ? icons[0] : null,
+                IconNames = config.Attribute.GetIcons(),
+                SettingsIconName = config.SettingsIcon,
             };
 
             ScriptableSingleton<ToolbarSettings>.instance.Sections[0].Items.Add(item);
             //settings!.Update();
-        }
-
-        private static Texture2D? GetTextureFromIcon(string icon)
-        {
-            var content = EditorGUIUtility.IconContent(icon);
-
-            return (content != null) ? (content.image as Texture2D) : null;
         }
 
         private void AddsBindItem(VisualElement element, int index)

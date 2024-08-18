@@ -21,16 +21,16 @@ namespace Redwyre.CustomToolbar.Editor
             EditorApplication.update -= OnUpdate;
             EditorApplication.update += OnUpdate;
 
-            LeftParent = CreateParentElement("ToolbarCustomParentLeft");
-            RightParent = CreateParentElement("ToolbarCustomParentRight");
+            LeftParent = Utils.CreateElement("ToolbarCustomParentLeft");
+            RightParent = Utils.CreateElement("ToolbarCustomParentRight");
 
-            LeftParent.Add(LeftLeftParent = CreateSectionElement("ToolbarCustomLeftAlignLeft"));
-            LeftParent.Add(LeftCenterParent = CreateSectionElement("ToolbarCustomLeftAlignCenter", Justify.Center));
-            LeftParent.Add(LeftRightParent = CreateSectionElement("ToolbarCustomLeftAlignRight", Justify.FlexEnd));
+            LeftParent.Add(LeftLeftParent = Utils.CreateElement("ToolbarCustomLeftAlignLeft"));
+            LeftParent.Add(LeftCenterParent = Utils.CreateElement("ToolbarCustomLeftAlignCenter", Justify.Center));
+            LeftParent.Add(LeftRightParent = Utils.CreateElement("ToolbarCustomLeftAlignRight", Justify.FlexEnd));
 
-            RightParent.Add(RightLeftParent = CreateSectionElement("ToolbarCustomRightAlightLeft"));
-            RightParent.Add(RightCenterParent = CreateSectionElement("ToolbarCustomRightAlightCenter", Justify.Center));
-            RightParent.Add(RightRightParent = CreateSectionElement("ToolbarCustomRightAlightRight", Justify.FlexEnd));
+            RightParent.Add(RightLeftParent = Utils.CreateElement("ToolbarCustomRightAlightLeft"));
+            RightParent.Add(RightCenterParent = Utils.CreateElement("ToolbarCustomRightAlightCenter", Justify.Center));
+            RightParent.Add(RightRightParent = Utils.CreateElement("ToolbarCustomRightAlightRight", Justify.FlexEnd));
         }
 
         public static VisualElement LeftParent { get; }
@@ -75,31 +75,19 @@ namespace Redwyre.CustomToolbar.Editor
             isInitialized = true;
         }
 
-        private static VisualElement CreateParentElement(string name)
+        public static VisualElement GetSectionParent(ToolbarSide side)
         {
-            return new VisualElement
+            return side switch
             {
-                name = name,
-                style =
-                {
-                    flexGrow = 1,
-                    flexDirection = FlexDirection.Row,
-                },
+                ToolbarSide.LeftAlignLeft => LeftLeftParent,
+                ToolbarSide.LeftAlignCenter => LeftCenterParent,
+                ToolbarSide.LeftAlignRight => LeftRightParent,
+                ToolbarSide.RightAlignLeft => RightLeftParent,
+                ToolbarSide.RightAlignCenter => RightCenterParent,
+                ToolbarSide.RightAlignRight => RightRightParent,
+                _ => throw new InvalidOperationException("Invalid side"),
             };
         }
 
-        private static VisualElement CreateSectionElement(string name, Justify justify = Justify.FlexStart)
-        {
-            return new VisualElement
-            {
-                name = name,
-                style =
-                {
-                    flexGrow = 1,
-                    flexDirection = FlexDirection.Row,
-                    justifyContent = justify
-                },
-            };
-        }
     }
 }
