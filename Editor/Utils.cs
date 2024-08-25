@@ -76,5 +76,23 @@ namespace Redwyre.CustomToolbar.Editor
 
             return default;
         }
+
+        public static void SetImageFromObject(Image image, Object? obj)
+        {
+            if (obj is Texture texture)
+            {
+                image.image = texture;
+            }
+
+            if (obj is Sprite sprite)
+            {
+                image.sprite = sprite;
+            }
+
+            if (obj is VectorImage vectorImage)
+            {
+                image.vectorImage = vectorImage;
+            }
+        }
     }
 }

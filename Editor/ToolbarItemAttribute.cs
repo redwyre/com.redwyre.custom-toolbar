@@ -1,8 +1,7 @@
 using System;
-using System.Drawing;
 using System.Linq;
-using Unity.IO.LowLevel.Unsafe;
-using Unity.Profiling;
+using UnityEngine;
+using Color = UnityEngine.Color;
 
 #nullable enable
 
@@ -16,6 +15,7 @@ namespace Redwyre.CustomToolbar.Editor
         public virtual string? ToolTip { get; set; } = null;
         public virtual string? SettingsIcon { get => settingsIcon ?? icons.FirstOrDefault(); set => settingsIcon = value; }
         public virtual string? Label { get; set; } = null;
+        public virtual bool Tintable { get; set; } = true;
 
 
         public string[] GetIcons() => icons;

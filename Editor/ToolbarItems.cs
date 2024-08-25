@@ -233,12 +233,19 @@ namespace Redwyre.CustomToolbar.Editor
                 var icon = new Image();
                 icon.AddToClassList("unity-editor-toolbar-element__icon");
 
+                //Utils.SetImageFromObject(icon, item.Icons.FirstOrDefault());
                 var b = Utils.BackgroundFromObject(item.Icons.FirstOrDefault());
-
                 icon.style.backgroundImage = b;
                 icon.style.height = 16;
                 icon.style.width = 16;
                 icon.style.alignSelf = Align.Center;
+
+                if (config.Attribute.Tintable)
+                {
+                    icon.AddToClassList("unity-editor-toolbar-element__icon-tintable");
+                    icon.style.unityBackgroundImageTintColor = new Color(0.7f, 0.7f, 0.7f);
+                }
+
                 button.Add(icon);
             }
 

@@ -16,34 +16,15 @@ namespace Redwyre.CustomToolbar.Editor
     public static class ToolbarIcons
     {
         private const string BasePath = "Packages/com.redwyre.custom-toolbar/Editor Default Resources/FontAwesome/";
-        static readonly Dictionary<string, Sprite> namedIcons = new();
-        static readonly Dictionary<string, Sprite> unitySprites = new();
+
+        static Dictionary<string, string> iconPacks = new()
+        {
+            { "fa", BasePath }
+        };
 
         static ToolbarIcons()
         {
-            Load();
-        }
 
-        public static void Load()
-        {
-            //var spriteGuids = AssetDatabase.FindAssets("t:Sprite", new[] { BasePath });
-            //foreach (var spriteGuid in spriteGuids)
-            //{
-            //    var path = AssetDatabase.GUIDToAssetPath(spriteGuid);
-            //    var asset = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            //    var relativePath = path.Replace(BasePath, string.Empty).Replace(".png", string.Empty);
-            //    namedIcons.Add(relativePath, asset);
-            //}
-        }
-
-        public static void Unload()
-        {
-            foreach (var s in unitySprites.Values)
-            {
-                Sprite.Destroy(s);
-            }
-            unitySprites.Clear();
-            namedIcons.Clear();
         }
 
         public static Object? GetIcon(string name)
@@ -53,10 +34,9 @@ namespace Redwyre.CustomToolbar.Editor
                 return LoadIconAsset(name);
             }
 
-            if (name.StartsWith("fa:", StringComparison.OrdinalIgnoreCase))
+            if (FindIconPack(name, out var path))
             {
-                var path = Path.Combine(BasePath, name.Split(':')[1]);
-                return LoadIconAsset($"{path}.svg");
+                return LoadIconAsset(path);
             }
 
             var texture = LoadBuiltInTexture(name);
@@ -68,6 +48,27 @@ namespace Redwyre.CustomToolbar.Editor
 
             Debug.LogWarning($"Unable to find icon {name}");
             return null;
+        }
+
+        private static bool FindIconPack(string name, out string path)
+        {
+            path = string.Empty;
+            var parts = name.Split(':');
+            if ( parts.Length != 2)
+            {
+                return false;
+            }
+
+            var pack = parts[0];
+            var iconName = parts[1];
+
+            if (iconPacks.TryGetValue(pack, out path))
+            {
+                path = Path.Combine(path, iconName + ".svg");
+                return true;
+            }
+
+            return false;
         }
 
         private static Object? LoadIconAsset(string name)
