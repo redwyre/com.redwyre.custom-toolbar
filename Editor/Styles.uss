@@ -1,0 +1,6 @@
+.custom-toolbar-icon {
+    flex-grow: 1;
+    align-self: center;
+    width: 16px;
+    height: 16px;
+}

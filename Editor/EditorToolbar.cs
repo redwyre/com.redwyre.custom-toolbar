@@ -14,6 +14,7 @@ namespace Redwyre.CustomToolbar.Editor
     {
         private static readonly Type ToolbarType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.Toolbar");
         private static ScriptableObject? currentToolbar = null;
+        private static VisualElement? Root = null;
 
         static EditorToolbar()
         {
@@ -67,10 +68,10 @@ namespace Redwyre.CustomToolbar.Editor
 
             currentToolbar = (ScriptableObject)toolbars[0];
             var root = currentToolbar.GetType().GetField("m_Root", BindingFlags.NonPublic | BindingFlags.Instance);
-            var mRoot = (VisualElement)root!.GetValue(currentToolbar);
-
-            mRoot.Q("ToolbarZoneLeftAlign").Add(LeftParent);
-            mRoot.Q("ToolbarZoneRightAlign").Add(RightParent);
+            Root = (VisualElement)root!.GetValue(currentToolbar);
+            
+            Root.Q("ToolbarZoneLeftAlign").Add(LeftParent);
+            Root.Q("ToolbarZoneRightAlign").Add(RightParent);
         }
 
         public static VisualElement GetSectionParent(ToolbarSide side)
@@ -87,5 +88,12 @@ namespace Redwyre.CustomToolbar.Editor
             };
         }
 
+        public static void AddStyleSheet(StyleSheet styleSheet)
+        {
+            if (Root != null)
+            {
+                Root.styleSheets.Add(styleSheet);
+            }
+        }
     }
 }

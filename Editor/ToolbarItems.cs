@@ -20,6 +20,8 @@ namespace Redwyre.CustomToolbar.Editor
         static ToolbarItem[] savedItems = Array.Empty<ToolbarItem>();
         static List<VisualElement> activeElements = new List<VisualElement>();
 
+        static StyleSheet StyleSheet => AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.redwyre.custom-toolbar/Editor/Styles.uss");
+
         public static ToolbarItemConfig[] Items => itemConfigs;
 
         static ToolbarItems()
@@ -112,6 +114,8 @@ namespace Redwyre.CustomToolbar.Editor
                 return;
             }
 
+            EditorToolbar.AddStyleSheet(StyleSheet);
+
 
             // update textures in place
             foreach (var x in ToolbarSettings.instance.Sections)
@@ -201,7 +205,7 @@ namespace Redwyre.CustomToolbar.Editor
                 toggle.text = config.Label;
             }
 
-            if (item.Icons != null && item.Icons.Length >= index)
+            if (item.Icons != null && index < item.Icons.Length)
             {
                 var icon = new Image();
                 icon.AddToClassList("unity-editor-toolbar-element__icon");
